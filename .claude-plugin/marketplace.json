@@ -1,13 +1,18 @@
 {
-  "marketplaceVersion": "1",
-  "plugins": {
-    "seco-triage": {
-      "source": {
-        "type": "git-subdir",
-        "url": "https://github.com/mikecirioli/seco-triage-test.git",
-        "branch": "main",
-        "path": "plugins/seco-triage"
-      }
+  "name": "seco-triage-test",
+  "owner": {
+    "name": "Mike Cirioli",
+    "email": "mcirioli@cloudbees.com"
+  },
+  "metadata": {
+    "description": "Test marketplace for seco-triage plugin migration",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "seco-triage",
+      "description": "Grader-based ticket quality assessment for CloudBees SECO and BEE tickets",
+      "source": "./plugins/seco-triage"
     }
-  }
+  ]
 }
