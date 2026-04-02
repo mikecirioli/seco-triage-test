@@ -1,0 +1,57 @@
+{
+  "_version": "0.5.0",
+  "_description": "Scoring weights and thresholds. Consumed by scorer.py, NOT loaded into LLM context.",
+  "categories": {
+    "template_completeness": {
+      "max_score": 3.5,
+      "deductions": {
+        "has_template_structure": 1.0,
+        "environment_version": 0.7,
+        "na_sections": 0.4,
+        "hypothesis_present": 0.15,
+        "docs_consulted": 0.1
+      },
+      "notes": "na_sections deduction is per-section, capped at 1.0"
+    },
+    "evidence_quality": {
+      "max_score": 2.5,
+      "deductions": {
+        "evidence_present": 0.8,
+        "logs_present": 0.6,
+        "error_has_message": 0.6,
+        "performance_has_metrics": 0.6,
+        "reproduction_present": 0.6,
+        "reproduction_structured": 0.25,
+        "intermittent_has_pattern": 0.5,
+        "regression_context": 0.15,
+        "change_context": 0.15
+      }
+    },
+    "routing_readiness": {
+      "max_score": 2.5,
+      "deductions": {
+        "ops_request_misrouted": 0.5,
+        "component_assigned": 0.5,
+        "summary_specific": 0.7,
+        "summary_descriptive": 0.35,
+        "zendesk_linked": 0.7
+      }
+    },
+    "classification_clarity": {
+      "max_score": 1.5,
+      "deductions": {
+        "issue_type_clear": 0.4,
+        "ask_specific": 0.35,
+        "impact_assessment": 0.2,
+        "related_tickets_linked": 0.15
+      }
+    }
+  },
+  "verdicts": {
+    "BLOCK": { "condition": "any CRITICAL grader fires on SECO", "score_cap": 3.0 },
+    "EXCELLENT": { "threshold": 8.5 },
+    "GOOD": { "threshold": 7.5 },
+    "FAIR": { "threshold": 5.0 },
+    "NEEDS_WORK": { "threshold": 0 }
+  }
+}

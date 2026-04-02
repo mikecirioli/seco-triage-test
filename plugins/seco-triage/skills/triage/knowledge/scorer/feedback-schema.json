@@ -1,0 +1,106 @@
+{
+  "_version": "0.3.0",
+  "_description": "Schema for captured triage interactions. Pushed by clients after /triage sessions.",
+
+  "privacy": {
+    "_description": "Strict privacy controls. Enforced by Claude Code hook at push time.",
+    "send": [
+      "ticket key (e.g. SECO-5311)",
+      "issue type (SECO, BEE, CDRO)",
+      "resolution status",
+      "scorer grader results (names + fired/not-fired)",
+      "score and verdict",
+      "category scores",
+      "component suggestions",
+      "structured corrections (grader name + correction type only)",
+      "user verdict override",
+      "session metadata (turns, actions, timestamps)"
+    ],
+    "never_send": [
+      "ticket summary or description text",
+      "customer names or account identifiers",
+      "Zendesk ticket numbers or URLs",
+      "Salesforce data",
+      "attachment contents or filenames",
+      "inline log snippets or stack traces",
+      "internal URLs (Jira, Confluence, Jenkins, support-analytics)",
+      "user freeform notes that may quote ticket content",
+      "email addresses",
+      "IP addresses or hostnames"
+    ],
+    "enforcement": {
+      "mechanism": "Claude Code hook (pre-push)",
+      "hook_event": "before feedback commit/push",
+      "validation": [
+        "Reject if any field contains text longer than 120 chars (likely ticket content)",
+        "Reject if payload contains patterns matching internal URLs",
+        "Reject if payload contains email addresses or IP addresses",
+        "Reject if payload contains Zendesk ticket numbers (ZD-NNNNNN pattern)",
+        "Reject if corrections[].user_note exceeds 80 chars"
+      ],
+      "fallback": "If validation fails, strip offending fields and warn user"
+    },
+    "scope": {
+      "capture_start": "/triage invocation",
+      "capture_end": "triage completion (verdict delivered + any corrections)",
+      "excludes": "All conversation before /triage and after triage completion"
+    }
+  },
+
+  "schema": {
+    "session_id": "uuid - unique per /triage invocation",
+    "timestamp": "ISO 8601",
+    "skill_version": "semver of the triage skill",
+    "scorer_version": "semver of the scoring engine",
+    "user": "github username of the tester (from git config)",
+
+    "ticket": {
+      "key": "SECO-XXXX or BEE-XXXXX",
+      "type": "SECO|BEE|CDRO",
+      "resolution": "current resolution at time of triage (may be Unresolved)"
+    },
+
+    "assessment": {
+      "score": "numeric score from scorer",
+      "verdict": "BLOCK|NEEDS_WORK|FAIR|GOOD|EXCELLENT",
+      "graders_fired": ["list of grader names that fired"],
+      "graders_total": "total grader count",
+      "categories": {
+        "template_completeness": { "score": 0, "max": 0 },
+        "evidence_quality": { "score": 0, "max": 0 },
+        "routing_readiness": { "score": 0, "max": 0 },
+        "classification_clarity": { "score": 0, "max": 0 }
+      },
+      "component_suggestions": ["suggested components"]
+    },
+
+    "feedback": {
+      "verdict_accepted": "true|false|null (null = user didn't explicitly accept/reject)",
+      "corrections": [
+        {
+          "grader": "grader_name",
+          "correction": "false_positive|false_negative|severity_wrong",
+          "user_note": "max 80 chars, no ticket content - structured reason only"
+        }
+      ],
+      "user_verdict": "optional - what verdict the user thinks is correct"
+    },
+
+    "context": {
+      "had_conversation": "true if user asked follow-up questions",
+      "turns": "number of user messages after initial assessment",
+      "actions_taken": ["list of actions: 'viewed_ticket', 'read_comments', 'suggested_edits', etc."]
+    }
+  },
+
+  "transport": {
+    "method": "git commit to feedback branch",
+    "repo": "TBD - dedicated feedback repo",
+    "branch": "feedback",
+    "format": "JSON, one file per session",
+    "filename": "{ticket_key}-{timestamp}.json",
+    "trigger": "end of /triage session or explicit /triage-submit",
+    "no_prs": true,
+    "_note": "Direct commits to feedback branch, not PRs. Lightweight for pilot phase."
+  }
+}

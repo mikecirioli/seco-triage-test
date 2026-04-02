@@ -1,0 +1,202 @@
+{
+  "_version": "0.5.0",
+  "_description": "Grader definitions for triage scoring. Consumed by scorer.py, NOT loaded into LLM context.",
+  "graders": {
+    "description_not_stub": {
+      "category": "template_completeness",
+      "severity": "CRITICAL",
+      "description": "Description is a placeholder or under 50 chars",
+      "blocks_seco": true,
+      "message": "Description is a placeholder. Fill in all template sections."
+    },
+    "has_template_structure": {
+      "category": "template_completeness",
+      "severity_seco": "CRITICAL",
+      "severity_bee": "ERROR",
+      "description": "No SECO template headings found (ADF or plain text)",
+      "blocks_seco": true,
+      "message": "No template structure found."
+    },
+    "symptom_present": {
+      "category": "template_completeness",
+      "severity": "CRITICAL",
+      "description": "Symptom section is empty or N/A",
+      "blocks_seco": true,
+      "message": "Symptom section is empty or N/A."
+    },
+    "environment_product": {
+      "category": "template_completeness",
+      "severity": "CRITICAL",
+      "description": "No product identified in environment or text",
+      "blocks_seco": true,
+      "product_keywords": ["cloudbees ci", "cloudbees cd", "cdro", "unify", "jenkins", "platform", "cjoc"],
+      "message": "Environment missing Product field."
+    },
+    "environment_version": {
+      "category": "template_completeness",
+      "severity": "ERROR",
+      "description": "No version number (X.Y.Z) found in text",
+      "pattern": "\\d+\\.\\d+\\.\\d+",
+      "message": "Version field blank or missing."
+    },
+    "na_sections": {
+      "category": "template_completeness",
+      "severity": "ERROR",
+      "description": "Template sections marked N/A",
+      "target_sections": ["evidence", "reproduction", "hypothesis", "documentation"],
+      "message_template": "{count} section(s) marked N/A."
+    },
+    "hypothesis_present": {
+      "category": "template_completeness",
+      "severity": "WARNING",
+      "description": "Hypothesis section is N/A or empty",
+      "message": "Hypothesis is N/A."
+    },
+    "docs_consulted": {
+      "category": "template_completeness",
+      "severity": "WARNING",
+      "description": "No documentation consulted",
+      "message": "No documentation consulted."
+    },
+    "evidence_present": {
+      "category": "evidence_quality",
+      "severity": "ERROR",
+      "description": "Evidence/Detail section is N/A or empty",
+      "message": "Evidence/Detail section is N/A or empty."
+    },
+    "logs_present": {
+      "category": "evidence_quality",
+      "severity": "ERROR",
+      "description": "No logs attached or linked (support bundles, build logs, product logs, thread dumps)",
+      "log_indicators": [
+        "support bundle", "support-bundle", "bundle attached", "attached bundle",
+        "build log", "build.log", "jenkins.log", "console output",
+        "thread dump", "heap dump", "stack trace",
+        ".log", ".gz", ".zip", ".tar",
+        "pastebin", "gist.github",
+        "support-analytics.cloudbees.com"
+      ],
+      "attachment_check": true,
+      "message": "No logs provided. Attach support bundle, build logs, or relevant product logs."
+    },
+    "error_has_message": {
+      "category": "evidence_quality",
+      "severity": "ERROR",
+      "description": "Error mentioned but no error text/stack trace inline",
+      "error_mention_keywords": ["error", "exception", "stacktrace", "fails", "failure"],
+      "error_text_pattern": "(Exception|Error|Caused by|SEVERE|FATAL|at \\w+\\.\\w+\\()",
+      "message": "Error mentioned but no error text/stack trace inline."
+    },
+    "performance_has_metrics": {
+      "category": "evidence_quality",
+      "severity": "ERROR",
+      "description": "Performance issue mentioned without timing/sizing data",
+      "perf_keywords": ["slow", "performance", "takes a long time", "latency", "timeout"],
+      "metrics_pattern": "\\d+\\s*(ms|sec|min|seconds|minutes|MB|GB)",
+      "message": "Performance issue without timing data."
+    },
+    "reproduction_present": {
+      "category": "evidence_quality",
+      "severity": "ERROR",
+      "description": "Bug-like issue but reproduction steps are N/A",
+      "bug_keywords": ["bug", "error", "fails", "broken", "crash", "doesn't work", "not working"],
+      "message": "Bug-like issue but reproduction steps are N/A."
+    },
+    "reproduction_structured": {
+      "category": "evidence_quality",
+      "severity": "WARNING",
+      "description": "Reproduction steps lack numbered structure",
+      "message": "Reproduction steps lack numbered structure."
+    },
+    "intermittent_has_pattern": {
+      "category": "evidence_quality",
+      "severity": "WARNING",
+      "description": "Intermittent issue without frequency/pattern data",
+      "intermittent_keywords": ["intermittent", "sometimes", "randomly", "occasionally", "sporadic"],
+      "pattern_keywords": ["frequency", "every", "times per", "pattern", "correlat", "time of day"],
+      "message": "Intermittent issue without frequency/pattern."
+    },
+    "regression_context": {
+      "category": "evidence_quality",
+      "severity": "WARNING",
+      "description": "Bug reported without regression context",
+      "regression_keywords": ["worked before", "regression", "used to work", "after upgrade", "last known good", "previous version", "started after"],
+      "message": "Bug reported without regression context (when did this last work?)."
+    },
+    "change_context": {
+      "category": "evidence_quality",
+      "severity": "WARNING",
+      "description": "Bug reported without change context",
+      "change_keywords": ["after upgrade", "after update", "after migration", "changed", "new version", "recently", "since", "after deploying"],
+      "message": "Bug reported without change context (what changed before it broke?)."
+    },
+    "component_assigned": {
+      "category": "routing_readiness",
+      "severity": "WARNING",
+      "description": "No component assigned",
+      "message_template": "No component assigned. Suggested: {suggestions}"
+    },
+    "summary_specific": {
+      "category": "routing_readiness",
+      "severity": "WARNING",
+      "description": "Summary under 30 chars",
+      "threshold": 30,
+      "message_template": "Summary is only {length} chars."
+    },
+    "summary_descriptive": {
+      "category": "routing_readiness",
+      "severity": "WARNING",
+      "description": "Summary between 30-50 chars (could be more specific)",
+      "min": 30,
+      "max": 50,
+      "message_template": "Summary is {length} chars, could be more specific."
+    },
+    "zendesk_linked": {
+      "category": "routing_readiness",
+      "severity": "ERROR",
+      "description": "No Zendesk ticket linked via customfield_12400",
+      "message": "No Zendesk ticket linked."
+    },
+    "ops_request_misrouted": {
+      "category": "routing_readiness",
+      "severity": "WARNING",
+      "description": "Ticket looks like an admin/ops request, not a support engineering case",
+      "ops_keywords": [
+        "user deletion", "delete user", "delete account", "remove user", "remove account",
+        "re-invite", "reinvite", "reset password", "password reset",
+        "access request", "grant access", "revoke access",
+        "provisioning", "deprovision", "deprovisioning",
+        "license assignment", "assign license", "remove license",
+        "create workspace", "create organization", "create tenant"
+      ],
+      "message": "This looks like an admin/ops request (not a support engineering case). Consider moving to the appropriate ops queue."
+    },
+    "issue_type_clear": {
+      "category": "classification_clarity",
+      "severity": "WARNING",
+      "description": "Issue type unclear (bug/question/RFE indicators mixed or absent)",
+      "message": "Issue type unclear (bug/question/RFE indicators mixed or absent)."
+    },
+    "ask_specific": {
+      "category": "classification_clarity",
+      "severity": "WARNING",
+      "description": "What help is needed section is vague or missing",
+      "min_length": 20,
+      "message": "\"What help is needed\" is vague or missing."
+    },
+    "impact_assessment": {
+      "category": "classification_clarity",
+      "severity": "WARNING",
+      "description": "No impact assessment (scope, workaround, affected users)",
+      "impact_keywords": ["impact", "affected", "users", "workaround", "blocking", "production", "degraded", "customers"],
+      "message": "No impact assessment (scope, workaround availability)."
+    },
+    "related_tickets_linked": {
+      "category": "classification_clarity",
+      "severity": "WARNING",
+      "description": "No related tickets referenced (issuelinks or inline)",
+      "inline_pattern": "(BEE|SECO|CDRO|CE)-\\d+",
+      "message": "No related tickets referenced."
+    }
+  }
+}

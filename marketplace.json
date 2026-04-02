@@ -1,0 +1,13 @@
+{
+  "marketplaceVersion": "1",
+  "plugins": {
+    "seco-triage": {
+      "source": {
+        "type": "git-subdir",
+        "url": "https://github.com/mikecirioli/seco-triage-test.git",
+        "branch": "main",
+        "path": "plugins/seco-triage"
+      }
+    }
+  }
+}

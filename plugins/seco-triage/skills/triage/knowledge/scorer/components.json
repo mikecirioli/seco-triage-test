@@ -1,0 +1,20 @@
+{
+  "_version": "0.5.0",
+  "_description": "Component keyword mapping for auto-suggestions. Consumed by scorer.py.",
+  "components": {
+    "cloudbees-ha": ["ha ", "high availability", "replica", "replication", "hazelcast"],
+    "artifact-manager-s3": ["artifact-manager-s3", "s3", "artifact storage"],
+    "cloudbees-managed-master-hibernation": ["hibernat"],
+    "cloudbees-workflow-template": ["pipeline template", "workflow template"],
+    "cloudbees-unify": ["unify", "rollout", "feature flag"],
+    "cloudbees-cdro": ["cd/ro", "cdro", "cloudbees cd", "release orchestration"],
+    "cloudbees-casc": ["casc", "configuration as code", "bundle"],
+    "helm-chart": ["helm"],
+    "remoting": ["agent reconnect", "agent disconnect", "remoting"],
+    "security": ["authentication", "authorization", "sso", "saml", "rbac"],
+    "operations-center": ["cjoc", "operations center", "oc "],
+    "cloudbees-folder": ["folder", "folders plus"],
+    "cloudbees-pipeline": ["pipeline", "declarative", "scripted pipeline"],
+    "license-manager": ["license"]
+  }
+}
